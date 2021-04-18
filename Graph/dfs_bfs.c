@@ -1,9 +1,7 @@
 #include"stdio.h"
 #include"stdlib.h"
 //图的邻接矩阵储存结构
-typedef int elemtype;
-#define maxsize 10
-#define queuesize 100
+#define maxsize 100
 //边结点的类型定义
 typedef struct edgenode
 {
@@ -14,7 +12,7 @@ typedef struct edgenode
 //顶点结点类型定义
 typedef struct vexnode
 {
-    elemtype data; //存储顶点的名称或其相关信息
+    int data; //存储顶点的名称或其相关信息
     edgenode *firstedge;//边表头指针
 }vexnode;
 //图的邻接表数据类型
@@ -22,8 +20,9 @@ typedef struct{
     vexnode vexlist[maxsize];//顶点表
     int n,e;
 }graph;
+vexnode queue[100];
 //在图g中查找顶点v,存在顶点数组中的下标，不存在返回-1
-int locatevex(graph g,elemtype v)
+int locatevex(graph g,int v)
 {
     int i;
     for(i=0;i<g.n;i++)
@@ -47,7 +46,7 @@ void print(graph g)
  }
  void creategraph(graph *g){
      int i,j,k;
-     elemtype v1,v2;
+     int v1,v2;
      edgenode *s;
      printf("请输入图的顶点数及边数\n");
      printf("顶点数 n=");scanf("%d",&g->n);
@@ -61,7 +60,7 @@ void print(graph g)
      for(k=0;k<g->e;k++)
      {
          printf("请输入第%d条边的两个端点下标：",k+1);
-         scanf("%d%d",&v1,&v2);getchar();//输入一条边的两个顶点
+         scanf("%d%d",&v1,&v2);//输入一条边的两个顶点
          i=locatevex(*g,v1);
          j=locatevex(*g,v2);
          if(i>=0&&j>=0){
@@ -106,6 +105,39 @@ void print(graph g)
          if (!visited[v])DFS(g,v);        
  }
  
+ void BFS(graph g,int i)
+ {
+     edgenode *p;
+     int h = 0;
+     int flag = h;
+     queue[h] = g.vexlist[i];
+     h++;
+     visited[i] = 1;
+     p=g.vexlist[i].firstedge;
+     while(flag <= g.n - 1 )
+     {
+         while(p!=NULL)    {
+         if(visited[p->adjvex]==0)
+           {
+               queue[h++] = g.vexlist[p -> adjvex];
+               visited[p -> adjvex] = 1;
+               }
+         p=p->next;
+     }
+     printf("%3d",queue[flag].data);
+     flag++;
+     p = g.vexlist[flag].firstedge;
+     }
+ }
+
+void BFStraverse(graph g)
+ {
+     int v;
+     for (v=0; v<g.n;v++)visited[v]=0; /*初始化标志数组*/
+     for  (v=0; v<g.n;v++) /*保证非连通图的遍历*/
+ /*从第v个顶点出发递归地深度优先遍历图G*/
+         if (!visited[v])BFS(g,v);        
+ }
  
  int main()
  {
@@ -116,8 +148,8 @@ void print(graph g)
      printf("图的深度优先遍历序列：\n");
      DFStraverse(g);
      printf("\n");
-    // printf("图的广度优先遍历序列：\n");
-    // BFStraverse(g);
+     printf("图的广度优先遍历序列：\n");
+     BFStraverse(g);
      printf("\n");
      return 0;
  }
